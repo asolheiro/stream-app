@@ -1,4 +1,4 @@
-from telnetlib import STATUS
+
 import traceback
 from typing import Any
 from django.contrib import admin, messages
@@ -25,18 +25,31 @@ class VideoAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description')
     prepopulated_fields = {"slug": ["title"]}
     
+    def det_readonly_fields(self, request: HttpRequest, obj: Any | None) -> list[str]:
+        if not obj:
+            return [
+                'video_status', 'is_published', 'published_at', 'num_likes', 'num_views', 'author',
+            ] 
+        else: 
+            return [
+                'video_status', 'published_at', 'num_likes', 'num_views', 'author'
+            ]
+        
+    def video_status(self, obj: Video) -> str:
+        return obj.get_video_status_display()
+    
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
             path(
                 '<int:id>/upload-video', 
                 self.admin_site.admin_view(self.upload_video_view), 
-                name='core_video_create'
+                name='core_video_upload'
                 ),
             path(
                 '<int:id>/upload-video/finish',
                 self.admin_site.admin_view(self.finish_upload_video_view),
-                name='core_video_create_finish'
+                name='core_video_upload_finish'
             )
         ]
         
@@ -48,8 +61,9 @@ class VideoAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
     
     def redirect_to_upload(self, obj: Video):
-        url = reverse('admin:core_video_create', args=[obj.id])
+        url = reverse('admin:core_video_upload', args=[obj.id])
         return format_html(f'<a href="{url}">Upload</a>')
+    
     redirect_to_upload.short_description = "Upload"
     
         

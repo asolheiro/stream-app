@@ -15,5 +15,5 @@ class VideoChunkUploadForm(forms.Form):
         return chunk
     
 class VideoChunkFinishUploadForm(forms.Form):
-    filename = forms.CharField(max_length=255, required=True)
+    fileName = forms.CharField(max_length=255, required=True)
     totalChunks = forms.IntegerField(min_value=1, required=True)
