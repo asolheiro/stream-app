@@ -3,17 +3,18 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
+	"gotranscoder/internal/utils"
 	"log/slog"
-	"os"
+
+	_ "github.com/lib/pq"
 )
 
 func ConnectPostgres() (*sql.DB, error) {
-	user := getEnvOrDefault("POSTGRES_USER", "root")
-	password := getEnvOrDefault("POSTGRES_PASSWORD", "password")
-	dbname := getEnvOrDefault("POSTGRES_DB", "converter_database")
-	host := getEnvOrDefault("POSTGRES_HOST", "postgres")
-	sslMode := getEnvOrDefault("POSTGRES_SSL_MODE", "disable")
+	user := utils.GetEnvOrDefault("POSTGRES_USER", "root")
+	password := utils.GetEnvOrDefault("POSTGRES_PASSWORD", "password")
+	dbname := utils.GetEnvOrDefault("POSTGRES_DB", "converter_database")
+	host := utils.GetEnvOrDefault("POSTGRES_HOST", "postgres")
+	sslMode := utils.GetEnvOrDefault("POSTGRES_SSL_MODE", "disable")
 
 	connStr := fmt.Sprintf(
 		"user=%s password=%s dbname=%s host=%s sslmode=%s",
@@ -33,11 +34,4 @@ func ConnectPostgres() (*sql.DB, error) {
 	}
 	slog.Info("connected to database successfully")
 	return db, nil
-}
-
-func getEnvOrDefault(key string, defaultValue string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return defaultValue
 }

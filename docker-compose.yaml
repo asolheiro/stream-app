@@ -1,0 +1,57 @@
+services:
+  go-transcoder:
+    build:
+      context: ./go-transcoder
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /tmp/videos/3:/tmp/videos/3
+      - externalStorage:/media/uploads
+    environment:
+        DEBUG: "true"
+        POSTGRES_USER: "root"
+        POSTGRES_PASSWORD: "password"
+        POSTGRES_DB: "converter_database"
+        POSTGRES_HOST: "postgres"
+        POSTGRES_SSL_MODE: "disable"
+        RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
+        CONVERSION_EXCHANGE: "conversionExchange"
+        CONVERSION_QUEUE: "videoConversion_queue"
+        CONVERSION_KEY: "conversion"
+    tty: true
+    stdin_open: true
+    depends_on:
+      - postgres
+  postgres:
+      image: postgres:17.0-alpine3.20
+      ports:
+        - "5432:5432"
+      environment:
+        POSTGRES_USER: "root"
+        POSTGRES_PASSWORD: "password"
+        POSTGRES_DB: "converter_database"
+      volumes:
+        - ../.docker/postgres:/var/lib/postgresql/data
+        - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "avgsolheiro@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "armando1998"
+    depends_on:
+      - postgres
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+volumes:
+  externalStorage:
+    external: true
