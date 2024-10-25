@@ -45,6 +45,7 @@ func (vc *VideoConverter) TaskHandler(delivery amqp.Delivery) {
 
 	if IsProcessed(vc.db, task.VideoId) {
 		slog.Warn("Video already processed", slog.Int("video_id", task.VideoId))
+		delivery.Ack(false)
 		return
 	}
 
@@ -59,7 +60,7 @@ func (vc *VideoConverter) TaskHandler(delivery amqp.Delivery) {
 		vc.logError(task, "failed to mark processed", err)
 		return
 	}
-	
+
 	delivery.Ack(false)
 	slog.Info("Video processed", slog.Int("video_id", task.VideoId))
 }
@@ -89,7 +90,7 @@ func (vc *VideoConverter) processVideo(task *VideoTask) error {
 
 	output, err := ffmpegCmd.CombinedOutput()
 	if err != nil {
-		vc.logError(*task, "failed to convert video to mpeg-dash, output "+string(output), err)
+		vc.logError(*task, "failed to convert video to mpeg-dash, output :" + string(output), err)
 		return err
 	}
 

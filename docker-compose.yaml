@@ -31,8 +31,8 @@ services:
         POSTGRES_PASSWORD: "password"
         POSTGRES_DB: "converter_database"
       volumes:
-        - ../.docker/postgres:/var/lib/postgresql/data
-        - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        - ./.docker/postgres:/var/lib/postgresql/data
+        - ./go-transcoder/init.sql:/docker-entrypoint-initdb.d/init.sql
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin

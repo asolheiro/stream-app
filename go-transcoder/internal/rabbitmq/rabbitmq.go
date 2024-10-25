@@ -27,16 +27,16 @@ func newConnection(url string) (*amqp.Connection, *amqp.Channel, error) {
 }
 
 func NewRabbitClient(connectionURL string) (*RabbitClient, error) {
-	
+
 	conn, channel, err := newConnection(connectionURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client: %v", err)
-	} 
+	}
 
 	return &RabbitClient{
-		conn: conn,
+		conn:    conn,
 		channel: channel,
-		url: connectionURL,
+		url:     connectionURL,
 	}, nil
 }
 
@@ -70,13 +70,13 @@ func (client *RabbitClient) ConsumeMessages(exchangeName, routingKey, queueName 
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to declare queue: %v", err)
-	} 
+	}
 
 	err = client.channel.QueueBind(
-		queue.Name, 
-		routingKey, 
-		exchangeName, 
-		false, 
+		queue.Name,
+		routingKey,
+		exchangeName,
+		false,
 		nil,
 	)
 
@@ -99,4 +99,61 @@ func (client *RabbitClient) ConsumeMessages(exchangeName, routingKey, queueName 
 	}
 
 	return msgs, nil
+}
+
+func (client *RabbitClient) PublishMessage(exchangeName, routingKey, queueName string, message []byte) error {
+	err := client.channel.ExchangeDeclare(
+		exchangeName,
+		"direct",
+		true,
+		true,
+		false,
+		false,
+		nil,
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to declare exchange: %v", err)
+	}
+
+	queue, err := client.channel.QueueDeclare(
+		queueName,
+		true,
+		true,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("faile to declare queue: %v", err)
+	}
+
+	err = client.channel.QueueBind(
+		queue.Name,
+		routingKey,
+		exchangeName,
+		false,
+		nil,
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to bin queue: %v", err)
+	}
+
+	err = client.channel.Publish(
+		exchangeName,
+		routingKey,
+		false,
+		false,
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        message,
+		},
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to publish message: %v", err)
+	}
+
+	return nil
 }
