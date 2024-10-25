@@ -8,12 +8,25 @@ import (
 	"log/slog"
 
 	"github.com/streadway/amqp"
-	
 )
 
 func main() {
+	//VarEnvs
+	// Consumer
+	exchangeName := utils.GetEnvOrDefault("CONVERSION_EXCHANGE", "conversionExchange")
+	queueName := utils.GetEnvOrDefault("CONVERSION_QUEUE", "videoConversion_queue")
+	routingKey := utils.GetEnvOrDefault("CONVERTION_KEY", "videoConversion")
+
+	//Producer
+	confirmationExc := utils.GetEnvOrDefault("CONFIRMATION_EXCHANGE", "confirmationExchange")
+	confirmationQueue := utils.GetEnvOrDefault("CONFIRMATION_QUEUE", "conversionConfirmation_queue")
+	confirmationKey := utils.GetEnvOrDefault("CONFIRMATION_KEY", "videoConfirmation	")
+
+	
+	
 	db, err := database.ConnectPostgres()
 	if err != nil {
+		slog.Error("failed to connect to PostgreSQL", slog.String("error", err.Error()))
 		panic(err)
 	}
 
@@ -24,12 +37,7 @@ func main() {
 	}
 	defer rabbitmqClient.Close()
 
-	exchangeName := utils.GetEnvOrDefault("CONVERSION_EXCHANGE", "conversionExchange")
-	queueName:= utils.GetEnvOrDefault("CONVERSION_QUEUE", "videoConversion_queue")
-	routingKey := utils.GetEnvOrDefault("CONVERTION_KEY", "conversion")
-
 	vc := converter.NewVideoConverter(db, rabbitmqClient)
-
 
 	messagesChannel, err := rabbitmqClient.ConsumeMessages(exchangeName, routingKey, queueName)
 	if err != nil {
@@ -37,11 +45,17 @@ func main() {
 	}
 
 	for messageDelivered := range messagesChannel {
-		go func (delivery amqp.Delivery)  {
-			vc.TaskHandler(delivery)
-			
+		go func(delivery amqp.Delivery) {
+			vc.HandleMessage(
+				context,
+				delivery,
+				confirmationExc,
+				confirmationKey,
+				confirmationQueue,
+			)
 		}(messageDelivered)
 
 	}
+
 
 }

@@ -29,7 +29,7 @@ func ConnectPostgres() (*sql.DB, error) {
 
 	err = db.Ping()
 	if err != nil {
-		slog.Error("error pinging database", slog.String("connStr", connStr))
+		slog.Error("failed to ping database", slog.String("connStr", connStr))
 		return nil, err
 	}
 	slog.Info("connected to database successfully")
