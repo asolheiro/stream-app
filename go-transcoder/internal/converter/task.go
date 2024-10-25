@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"gotranscoder/internal/rabbitmq"
+	"gotranscoder/pkg/rabbitmq"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -28,7 +28,7 @@ func NewVideoConverter(db *sql.DB, rabbitmqClient *rabbitmq.RabbitClient, rootPa
 	return &VideoConverter{
 		db:             db,
 		rabbitmqClient: rabbitmqClient,
-		rootPath: rootPath,
+		rootPath:       rootPath,
 	}
 }
 
@@ -110,7 +110,6 @@ func (vc *VideoConverter) processVideo(task *VideoTask) error {
 	return nil
 }
 
-
 func (vc *VideoConverter) extractNumber(fileName string) int {
 	re := regexp.MustCompile(`\d+`)
 	numStr := re.FindString(filepath.Base(fileName))
@@ -123,23 +122,23 @@ func (vc *VideoConverter) mergeChunks(inputDir, outputFile string) error {
 	if err != nil {
 		return fmt.Errorf("failed to find chunks: %v", err)
 	}
-	
+
 	sort.Slice(chunks, func(i, j int) bool {
 		return vc.extractNumber(chunks[i]) < vc.extractNumber(chunks[j])
 	})
-	
+
 	output, err := os.Create(outputFile)
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %v", err)
 	}
 	defer output.Close()
-	
+
 	for i, chunk := range chunks {
 		input, err := os.Open(chunk)
 		if err != nil {
 			return fmt.Errorf("failed to open chunk %d: %v", i+1, chunk)
 		}
-		
+
 		_, err = output.ReadFrom(input)
 		if err != nil {
 			return fmt.Errorf("failed to write chunk %s to merged file: %v", chunk, err)

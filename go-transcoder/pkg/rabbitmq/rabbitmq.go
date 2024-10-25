@@ -37,7 +37,7 @@ func newConnection(url string) (*amqp.Connection, *amqp.Channel, error) {
 	return conn, channel, nil
 }
 
-func NewRabbitClient(connectionURL string) (*RabbitClient, error) {
+func NewRabbitClient(ctx context.Context, connectionURL string) (*RabbitClient, error) {
 	conn, channel, err := newConnection(connectionURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client: %v", err)
