@@ -5,13 +5,14 @@ import shutil
 from django.db import IntegrityError, transaction
 
 from core.models import Video, VideoMedia
+from .rabbitmq import create_rabbitmq_connection
 
 @dataclass
 class VideoService:
     storage: 'Storage'
     
     def get_chunk_directory(self, video_id: int) -> str:
-        return f'/tmp/videos/{video_id}'
+        return f'../media/uploads/{video_id}'
     
     def find_video(self, video_id: int) -> Video:
         return Video.objects.get(id=video_id)
@@ -67,6 +68,8 @@ class VideoService:
             video_media.status = VideoMedia.Status.PROCESS_STARTED
             video_media.save()
             
+            self.__produce_message(video_id, video_media.video_path, 'chunks')
+            
         except Video.video_media.RelatedObjectDoesNotExist:
             raise VideoMediaNotExistsException('Upload not started.')    
           
@@ -85,7 +88,7 @@ class VideoService:
     def upload_chunks_to_external_storage(self, video_id: int) -> None:
         self.find_video(video_id)
         source_path = self.get_chunk_directory(video_id)
-        dest_path = f'/media/uploads/{video_id}'
+        dest_path = f'../media/uploads/{video_id}'
         self.storage.move_chunks(source_path, dest_path)
         
     def register_processed_video_path(self, video_id: int, video_path) -> None:
@@ -96,6 +99,19 @@ class VideoService:
         video_media.video_path = video_path
         video_media.status = VideoMedia.Status.PROCESS_FINISHED
         video_media.save()
+        
+    def __produce_message(self, video_id: int, path: str, routing_key: str):
+        with create_rabbitmq_connection() as conn:
+            producer = conn.Producer(serializer='json')
+            producer.publish(
+                {
+                'video_id': video_id,
+                'path': path
+                },
+                exchange='conversionExchange',
+                routing_key=routing_key
+            )
+        
     
 def create_video_service_factory() -> VideoService:
     return VideoService(Storage())
