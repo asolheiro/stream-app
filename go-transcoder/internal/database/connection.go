@@ -12,7 +12,7 @@ import (
 func ConnectPostgres() (*sql.DB, error) {
 	user := utils.GetEnvOrDefault("POSTGRES_USER", "root")
 	password := utils.GetEnvOrDefault("POSTGRES_PASSWORD", "password")
-	dbname := utils.GetEnvOrDefault("POSTGRES_DB", "converter_database")
+	dbname := utils.GetEnvOrDefault("POSTGRES_DB", "database")
 	host := utils.GetEnvOrDefault("POSTGRES_HOST", "postgres")
 	sslMode := utils.GetEnvOrDefault("POSTGRES_SSL_MODE", "disable")
 

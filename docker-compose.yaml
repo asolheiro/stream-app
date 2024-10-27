@@ -1,50 +1,83 @@
 services:
   go-transcoder:
+    container_name: go-transcoder
     build:
       context: ./go-transcoder
       dockerfile: Dockerfile
     volumes:
       - .:/app
-      - /tmp/videos/3:/tmp/videos/3
+      - ./media:/media
       - externalStorage:/media/uploads
     environment:
         DEBUG: "true"
         POSTGRES_USER: "root"
         POSTGRES_PASSWORD: "password"
-        POSTGRES_DB: "converter_database"
+        POSTGRES_DB: "database"
         POSTGRES_HOST: "postgres"
         POSTGRES_SSL_MODE: "disable"
         RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
         CONVERSION_EXCHANGE: "conversionExchange"
         CONVERSION_QUEUE: "videoConversion_queue"
-        CONVERSION_KEY: "conversion"
+        CONVERSION_KEY: "videoConversion"
+        CONFIRMATION_EXCHANGE: "confirmationExchange"
+        CONFIRMATION_QUEUE: "conversionConfirmation_queue"
+        CONFIRMATION_KEY: "videoConfirmation"
     tty: true
     stdin_open: true
     depends_on:
       - postgres
+  admin-page:
+    container_name: admin-page
+    build:
+      context: ./py-django
+      dockerfile: Dockerfile
+    volumes:
+      - externalStorage:/media/uploads
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "database"
+      POSTGRES_HOST: "postgres"
+      POSTGRES_SSL_MODE: "disable"
   postgres:
-      image: postgres:17.0-alpine3.20
-      ports:
-        - "5432:5432"
-      environment:
-        POSTGRES_USER: "root"
-        POSTGRES_PASSWORD: "password"
-        POSTGRES_DB: "converter_database"
-      volumes:
-        - ./.docker/postgres:/var/lib/postgresql/data
-        - ./go-transcoder/init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: postgres
+    image: postgres:17.0-alpine3.20
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "database"
+    volumes:
+      - ./.docker/postgres:/var/lib/postgresql/data
+      - ./go-transcoder/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   pgadmin:
-    image: dpage/pgadmin4
     container_name: pgadmin
+    image: dpage/pgadmin4
     restart: always
     ports:
       - "8888:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: "avgsolheiro@gmail.com"
       PGADMIN_DEFAULT_PASSWORD: "armando1998"
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "database"
     depends_on:
       - postgres
   rabbitmq:
+    container_name: rabbitmq
     image: rabbitmq:3-management
     ports:
       - "5672:5672"
