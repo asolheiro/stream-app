@@ -2,5 +2,5 @@
 .docker/
 
 #python
-/media
+./media
 /py-django/thumbnails
