@@ -1,1 +1,6 @@
+#postgres data
 .docker/
+
+#python
+/media
+/py-django/thumbnails
