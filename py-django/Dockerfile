@@ -13,7 +13,9 @@ ENV DJANGO_SETTINGS_MODULE=videos.settings \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-CMD ["sh", "-c", "python manage.py migrate && \
-    python manage.py collectstatic\
-    --noinput && \
+CMD ["sh", "-c",  \
+    "python manage.py makemigrations && \
+    python manage.py migrate && \
+    python manage.py collectstatic --noinput && \
+    python manage.py init_admin && \
     gunicorn videos.wsgi:application --bind 0.0.0.0:8000"]

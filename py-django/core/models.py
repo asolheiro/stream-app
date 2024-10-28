@@ -1,5 +1,6 @@
 from django.db import models
-
+        
+        
 class Video(models.Model):
     title = models.CharField(max_length=100, unique=True, verbose_name='Título')
     description = models.TextField(verbose_name='Descrição')
@@ -69,5 +70,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Tag'
         verbose_name_plural = 'Tags'
+        
+
 
     
