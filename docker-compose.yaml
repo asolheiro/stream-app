@@ -42,6 +42,7 @@ services:
       DJANGO_SUPERUSER_USERNAME: asolheiro
       DJANGO_SUPERUSER_EMAIL: admin@admin.com
       DJANGO_SUPERUSER_PASSWORD: admin
+      CONVERSION_KEY: "videoConversion"
   postgres:
     container_name: postgres
     image: postgres:17.0-alpine3.20

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from decouple import config
 import os
 import shutil
 
@@ -87,9 +88,14 @@ class VideoService:
     
     def upload_chunks_to_external_storage(self, video_id: int) -> None:
         self.find_video(video_id)
+        
         source_path = self.get_chunk_directory(video_id)
         dest_path = f'/media/uploads/{video_id}'
+        
         self.storage.move_chunks(source_path, dest_path)
+        
+        conversionKey = config('CONVERSION_KEY')
+        self.__produce_message(video_id, dest_path, conversionKey)
         
     def register_processed_video_path(self, video_id: int, video_path) -> None:
         video = self.find_video(video_id)
