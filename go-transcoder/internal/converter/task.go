@@ -33,7 +33,7 @@ func NewVideoConverter(db *sql.DB, rabbitmqClient *rabbitmq.RabbitClient, rootPa
 }
 
 type VideoTask struct {
-	VideoID   int    `json:"vide_id"`
+	VideoID   int    `json:"video_id"`
 	VideoPath string `json:"path"`
 }
 

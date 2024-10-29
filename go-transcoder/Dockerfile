@@ -6,4 +6,10 @@ RUN apk add --no-cache bash ffmpeg
 
 WORKDIR /app
 
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY ./ .
+
 CMD ["bash"]

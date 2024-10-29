@@ -5,9 +5,7 @@ services:
       context: ./go-transcoder
       dockerfile: Dockerfile
     volumes:
-      - .:/app
-      - ./media:/media
-      - externalStorage:/media/uploads
+      - ./media/uploads:/media/uploads
     environment:
         DEBUG: "true"
         POSTGRES_USER: "root"
@@ -32,7 +30,7 @@ services:
       context: ./py-django
       dockerfile: Dockerfile
     volumes:
-      - externalStorage:/media/uploads
+      - ./media/uploads:/media/uploads
     ports:
       - "8000:8000"
     depends_on:
@@ -68,7 +66,7 @@ services:
     ports:
       - "8888:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: "asolheiro"
+      PGADMIN_DEFAULT_EMAIL: "asolheiro@example.com"
       PGADMIN_DEFAULT_PASSWORD: "admin"
       POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "password"
@@ -84,6 +82,3 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
-volumes:
-  externalStorage:
-    external: true

@@ -13,7 +13,7 @@ class VideoService:
     storage: 'Storage'
     
     def get_chunk_directory(self, video_id: int) -> str:
-        return f'/tmp/videos/{video_id}'
+        return f'/media/tmp/videos/{video_id}'
     
     def find_video(self, video_id: int) -> Video:
         return Video.objects.get(id=video_id)
@@ -25,21 +25,21 @@ class VideoService:
         with transaction.atomic():
             video_media = self.__prepare_video_media(video)
             
-            if video_media.status == VideoMedia.Status.PROCESS_STARTED:
+            if video_media.status == VideoMedia.Status.PROCESSING_STARTED:
                 raise VideoMediaInvalidStatusException("An upload is already in progress.")
             
             if video_media.status == VideoMedia.Status.UPLOAD_STARTED:
                 self.storage.storage_chunk(str(video_media.video_path), chunk_index, chunk)
                 return
             
-            if video_media.status == VideoMedia.Status.PROCESS_FINISHED:
+            if video_media.status == VideoMedia.Status.PROCESSING_FINISHED:
                 video_media.video_path = directory
                 video.is_published = False
                 video.save()
             
             video_media.status = VideoMedia.Status.UPLOAD_STARTED
             video_media.save()
-            self.storage.storage_chunk(str(video_media.video_path), chunk_index, chunk)
+            self.storage.storage_chunk(str(video_media.video_path), chunk_index, chunk).status
 
     def __prepare_video_media(self, video: Video) -> VideoMedia:
         try:
@@ -66,7 +66,7 @@ class VideoService:
             if not is_chunk_valid:
                 raise VideoChunkUploadException("Chunks are not valid.")
             
-            video_media.status = VideoMedia.Status.PROCESS_STARTED
+            video_media.status = VideoMedia.Status.PROCESSING_STARTED
             video_media.save()
             
             self.__produce_message(video_id, video_media.video_path, 'chunks')
@@ -100,10 +100,10 @@ class VideoService:
     def register_processed_video_path(self, video_id: int, video_path) -> None:
         video = self.find_video(video_id)
         video_media = video.video_media
-        if video_media.status != VideoMedia.Status.PROCESS_STARTED:
+        if video_media.status != VideoMedia.Status.PROCESSING_STARTED:
             raise VideoMediaInvalidStatusException('Processing must be started to finish it.')
         video_media.video_path = video_path
-        video_media.status = VideoMedia.Status.PROCESS_FINISHED
+        video_media.status = VideoMedia.Status.PROCESSING_FINISHED
         video_media.save()
         
     def __produce_message(self, video_id: int, path: str, routing_key: str):

@@ -7,7 +7,7 @@ from django.utils import timezone
 class Video(models.Model):
     title = models.CharField(max_length=100, unique=True, verbose_name='Título')
     description = models.TextField(verbose_name='Descrição')
-    thumbnail = models.ImageField(upload_to='thumbnails/', verbose_name='Thumbnail')
+    thumbnail = models.ImageField(upload_to='/media/thumbnails', verbose_name='Thumbnail')
     slug = models.SlugField(unique=True)
     published_at = models.DateTimeField(
         verbose_name='Publicado em', 
@@ -34,7 +34,7 @@ class Video(models.Model):
         if self.is_published:
             if not hasattr(self, 'video_media'):
                 raise ValidationError('O vídeo não possui mídia associada.')
-            if self.video_media.status != VideoMedia.Status.PROCESS_FINISHED:
+            if self.video_media.status != VideoMedia.Status.PROCESSING_FINISHED:
                 raise ValidationError('O vídeo não foi processado.')
     
     def get_video_status_display(self):
@@ -54,9 +54,9 @@ class VideoMedia(models.Model):
     
     class Status(models.TextChoices):
         UPLOAD_STARTED = "UPLOAD_STARTED", "Upload iniciado"
-        PROCESS_STARTED = "PROCESS_STARTED", "Processamento iniciado"
-        PROCESS_FINISHED = "PROCESS_FINISHED", "Processamento finalizado"
-        PROCESS_ERROR = "PROCESS_ERROR", "Erro no processamento"
+        PROCESSING_STARTED = "PROCESSING_STARTED", "Processamento iniciado"
+        PROCESSING_FINISHED = "PROCESSING_FINISHED", "Processamento finalizado"
+        PROCESSING_ERROR = "PROCESSING_ERROR", "Erro no processamento"
         
     video_path = models.CharField(max_length=255, verbose_name='Video')    
     status = models.CharField(
