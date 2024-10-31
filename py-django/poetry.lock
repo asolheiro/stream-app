@@ -49,6 +49,20 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "djangorestframework"
+version = "3.15.2"
+description = "Web APIs for Django, made easy."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "djangorestframework-3.15.2-py3-none-any.whl", hash = "sha256:2b8871b062ba1aefc2de01f773875441a961fefbf79f5eed1e32b2f096944b20"},
+    {file = "djangorestframework-3.15.2.tar.gz", hash = "sha256:36fe88cd2d6c6bec23dca9804bab2ba5517a8bb9d8f47ebc68981b56840107ad"},
+]
+
+[package.dependencies]
+django = ">=4.2"
+
+[[package]]
 name = "gunicorn"
 version = "23.0.0"
 description = "WSGI HTTP Server for UNIX"
@@ -332,4 +346,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "2430f7d9baee496396a0722154b5cdfaf110f442b8183135b9000ba6c3e3bc8f"
+content-hash = "9ced0d30a5552ad9d8a54d0b21f92fce41a3763bca8ef93917dd8e2a61328a67"

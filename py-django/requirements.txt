@@ -7,6 +7,9 @@ asgiref==3.8.1 ; python_version >= "3.12" and python_version < "4.0" \
 django==5.1.2 ; python_version >= "3.12" and python_version < "4.0" \
     --hash=sha256:bd7376f90c99f96b643722eee676498706c9fd7dc759f55ebfaf2c08ebcdf4f0 \
     --hash=sha256:f11aa87ad8d5617171e3f77e1d5d16f004b79a2cf5d2e1d2b97a6a1f8e9ba5ed
+djangorestframework==3.15.2 ; python_version >= "3.12" and python_version < "4.0" \
+    --hash=sha256:2b8871b062ba1aefc2de01f773875441a961fefbf79f5eed1e32b2f096944b20 \
+    --hash=sha256:36fe88cd2d6c6bec23dca9804bab2ba5517a8bb9d8f47ebc68981b56840107ad
 gunicorn==23.0.0 ; python_version >= "3.12" and python_version < "4.0" \
     --hash=sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d \
     --hash=sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec

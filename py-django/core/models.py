@@ -7,7 +7,7 @@ from django.utils import timezone
 class Video(models.Model):
     title = models.CharField(max_length=100, unique=True, verbose_name='Título')
     description = models.TextField(verbose_name='Descrição')
-    thumbnail = models.ImageField(upload_to='/media/thumbnails', verbose_name='Thumbnail')
+    thumbnail = models.ImageField(upload_to='../media/thumbnails', verbose_name='Thumbnail')
     slug = models.SlugField(unique=True)
     published_at = models.DateTimeField(
         verbose_name='Publicado em', 

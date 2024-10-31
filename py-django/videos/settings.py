@@ -29,6 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '0.0.0.0',
+    'localhost'
     ]
 
 
@@ -43,11 +44,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ] 
 
+THIRD_PARTY_APPS = [
+    'rest_framework',
+]
+
 MY_APPS = [
     'core',
 ]
 
-INSTALLED_APPS += MY_APPS
+INSTALLED_APPS = INSTALLED_APPS + THIRD_PARTY_APPS + MY_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
