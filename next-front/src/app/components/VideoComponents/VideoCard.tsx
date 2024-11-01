@@ -31,12 +31,16 @@ export function VideoCard(props: VideoCardProps) {
                     sizes="100%"
                     className="object-cover rounded-lg"
                     />
-            <div className="flex items-center justify-between mt-1 text-sm text-secondary">
-                <span>{views} visualizações</span>
-                <div className="flex items-center space-x-1">
-                    {likes !== undefined && <span>{likes}</span>}
-                </div>
             </div>
+            <div>
+                <h3 className="text-lg font-semibold text-primary">{title}</h3>
+
+                <div className="flex items-center justify-between mt-1 text-sm text-secondary">
+                    <span>{views} visualizações</span>
+                    <div className="flex items-center space-x-1">
+                        {likes !== undefined && <span>{likes}</span>}
+                    </div>
+                </div>
             </div>
         </div>
     );

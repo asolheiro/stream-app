@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    after: true
+  },
+  images : {
+    remotePatterns: [
+      {
+        hostname: 'localhost'
+      },
+      {
+        hostname: 'host.docker.internal'
+      }
+    ]
+  }
 };
 
 export default nextConfig;

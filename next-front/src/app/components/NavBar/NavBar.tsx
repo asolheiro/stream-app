@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { SearchBar } from "../SearchBar";
+import { SearchBar } from "./SearchBar";
+
 
 export function NavBar() {
     return (
@@ -16,7 +17,6 @@ export function NavBar() {
                     {/* https://next.js.or/docs/messages/missing-suspense-ith-csr-bailout */}
                     <Suspense>
                         <SearchBar />
-
                     </Suspense>
                 </div>
 
