@@ -8,7 +8,8 @@ import { ptBR } from "date-fns/locale";
 import { getVideo } from "./getVideo";
 import { VideoLikesCounter } from "./VideoLike";
 import VideoCardSkeleton from "@/app/components/VideoComponents/VideoCardSkeleton";
-import { VideoRecommendationsList } from "@/app/components/VideoComponents/VideoRecommendations";
+import { VideosRecomendationList } from "@/app/components/VideoComponents/VideoRecommendations";
+
 
 export default async function VideoPlayPage({
     params, 
@@ -77,7 +78,7 @@ export default async function VideoPlayPage({
                                 <VideoCardSkeleton orientation="horizontal" key={i} />
                             ))}
                         >
-                            <VideoRecommendationsList videoId={video.id} />
+                            <VideosRecomendationList videoId={video.id} />
                         </Suspense>
                     </div>
                 </div>

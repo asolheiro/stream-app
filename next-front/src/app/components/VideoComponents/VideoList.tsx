@@ -3,8 +3,6 @@ import Link from "next/link";
 import { VideoCard } from "./VideoCard";
 
 
-
-
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function getVideos(search: string): Promise<VideoModel[]> {

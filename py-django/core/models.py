@@ -1,4 +1,5 @@
 
+import os
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -7,7 +8,7 @@ from django.utils import timezone
 class Video(models.Model):
     title = models.CharField(max_length=100, unique=True, verbose_name='Título')
     description = models.TextField(verbose_name='Descrição')
-    thumbnail = models.ImageField(upload_to='../media/thumbnails', verbose_name='Thumbnail')
+    thumbnail = models.ImageField(upload_to='media/thumbnails', verbose_name='Thumbnail')
     slug = models.SlugField(unique=True)
     published_at = models.DateTimeField(
         verbose_name='Publicado em', 
@@ -40,7 +41,7 @@ class Video(models.Model):
     def get_video_status_display(self):
         if not hasattr(self, 'video_media'):
             return 'Pendente'
-        return self.video_media.get_status_display()
+        return self.video_media.get_status_display()      
     
     def __str__(self):
         return self.title

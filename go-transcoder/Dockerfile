@@ -12,4 +12,4 @@ RUN go mod download
 
 COPY ./ .
 
-CMD ["bash"]
+CMD go run ./cmd/mediaconverter/main.go
