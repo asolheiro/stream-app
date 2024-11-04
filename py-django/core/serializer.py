@@ -1,7 +1,6 @@
-
-from rest_framework import serializers
+from django.conf import Settings
+from rest_framework import serializers, settings
 from core.models import Video
-from django.conf import settings
 
 class VideoSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
@@ -16,14 +15,14 @@ class VideoSerializer(serializers.ModelSerializer):
     video_url = serializers.SerializerMethodField()
     
     def get_thumbnail(self, obj):
-        # return f'{settings.ASSET_URL}{obj.thumbnail}'
-        return f'http://localhost:9000/{obj.thumbnail}'
+        
+        return f'{settings.ASSETS_URL}/{obj.thumbnail}'
 
 
     def get_video_url(self, obj):
         # asset_url = settings.ASSET_URL
         # return f'{asset_url}{obj.video_media.video_path}'
-        return f'http://localhost:9000/{obj.video_media.video_path}'
+        return f'{settings.ASSETS_URL}/{obj.video_media.video_path}'
     
     class Meta:
         model = Video

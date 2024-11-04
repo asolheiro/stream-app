@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import dj_database_url
+
 from pathlib import Path
 
 from django.conf.global_settings import MEDIA_ROOT
@@ -31,7 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '0.0.0.0',
-    'localhost'
+    'localhost',
+    'admin-page',
     ]
 
 
@@ -91,18 +94,7 @@ WSGI_APPLICATION = 'videos.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-#    'default': {
-#       'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'database',
-        'USER': 'root',
-        'PASSWORD': 'password',
-        'HOST': 'postgres',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
 }
 
 
@@ -147,3 +139,9 @@ STATIC_ROOT = '/static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+## Environment variables
+
+ASSETS_URL = os.environ.get('ASSETS_URL')   
+RABBITMQ_URL = os.environ.get('RABBITMQ_URL')
+

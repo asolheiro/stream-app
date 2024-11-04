@@ -69,8 +69,8 @@ class VideoService:
             video_media.status = VideoMedia.Status.PROCESSING_STARTED
             video_media.save()
             
-            conversionKey = config("CONVERSION_KEY")
-            self.__produce_message(video_id, video_media.video_path, conversionKey)
+            
+            self.__produce_message(video_id, video_media.video_path, 'chunks')
             
         except Video.video_media.RelatedObjectDoesNotExist:
             raise VideoMediaNotExistsException('Upload not started.')    
