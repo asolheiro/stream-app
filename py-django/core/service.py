@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from decouple import config
 import os
 import shutil
 
+from django.conf import settings
+from django.contrib.gis.gdal.raster import source
 from django.db import IntegrityError, transaction
 
 from core.models import Video, VideoMedia
@@ -96,8 +97,9 @@ class VideoService:
         
         self.storage.move_chunks(source_path, dest_path)
         
-        conversionKey = config('CONVERSION_KEY')
-        self.__produce_message(video_id, dest_path, conversionKey)
+        conversion_key = settings.CONVERSION_KEY
+        
+        self.__produce_message(video_id, dest_path, conversion_key)
         
     def register_processed_video_path(self, video_id: int, video_path) -> None:
         video = self.find_video(video_id)
@@ -149,7 +151,7 @@ class Storage:
         if not os.path.exists(dest_path):
             os.makedirs(dest_path, exist_ok=True)
         
-        for filename in os.listdir(dest_path):
+        for filename in os.listdir(source_path):
             file_path = os.path.join(source_path, filename)
             
             if os.path.isfile(file_path):

@@ -13,7 +13,7 @@ class Command(BaseCommand):
        queue = Queue('chunks', exchange, routing_key='chunks')
        
        with create_rabbitmq_connection() as conn:
-           with conn.Consumer(queue, callback=[self.process_message]):
+           with conn.Consumer(queue, callbacks=[self.process_message]):
                while True:
                    self.stdout.write(self.style.SUCCESS('Waiting for messages...'))
                    conn.drain_events()

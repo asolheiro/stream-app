@@ -1,5 +1,5 @@
 from django.core.management import BaseCommand
-from decouple import config
+from django.conf import settings
 from kombu import Exchange, Queue
 
 from core.rabbitmq import create_rabbitmq_connection
@@ -9,20 +9,20 @@ class Command(BaseCommand):
     help = 'Register processed video path'
     
     def handle(self, *args, **options):
-       confirmationExchange = config('CONFIRMATION_EXCHANGE')
-       confirmationQueue = config('CONFIRMATION_QUEUE')
-       confirmationKey = config('CONFIRMATION_KEY') 
+        confirmation_exchange = settings.CONFIRMATION_EXCHANGE
+        confirmation_queue = settings.CONFIRMATION_QUEUE
+        confirmation_key = settings.CONFIRMATION_KEY
        
-       self.stdout.write(self.style.SUCCESS('Starting consumer...'))
+        self.stdout.write(self.style.SUCCESS('Starting consumer...'))
        
-       exchange = Exchange(confirmationExchange, type='direct', auto_delete= True)
-       queue = Queue(confirmationQueue, exchange, confirmationKey)
+        exchange = Exchange(confirmation_exchange, type='direct', auto_delete= True)
+        queue = Queue(confirmation_queue, exchange, confirmation_key)
        
-       with create_rabbitmq_connection() as conn:
-           with conn.Consumer(queue, callback=[self.process_message]):
-               while True:
-                   self.stdout.write(self.style.SUCCESS('Waiting for messages...'))
-                   conn.drain_events()
+        with create_rabbitmq_connection() as conn:
+            with conn.Consumer(queue, callbacks=[self.process_message]):
+                while True:
+                    self.stdout.write(self.style.SUCCESS('Waiting for messages...'))
+                    conn.drain_events()
            
     def process_message(self, body, message):
         self.stdout.write(self.style.SUCCESS(f'Processing message: {body}'))

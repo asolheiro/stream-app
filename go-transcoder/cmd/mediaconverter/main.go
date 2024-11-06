@@ -26,7 +26,7 @@ func main() {
 	//Producer
 	confirmationQueue := utils.GetEnvOrDefault("CONFIRMATION_QUEUE", "conversionConfirmation_queue")
 	confirmationKey := utils.GetEnvOrDefault("CONFIRMATION_KEY", "videoConfirmation	")
-	rootPath := utils.GetEnvOrDefault("VIDEO_ROOT_PATH", "media/uploads")
+	rootPath := utils.GetEnvOrDefault("VIDEO_ROOT_PATH", "/media/uploads")
 	//
 
 	isDebug := utils.GetEnvOrDefault("DEBUG", "false") == "true"

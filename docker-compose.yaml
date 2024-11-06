@@ -10,7 +10,7 @@ services:
         DEBUG: "true"
         POSTGRES_USER: "admin"
         POSTGRES_PASSWORD: "root"
-        POSTGRES_DB: "database"
+        POSTGRES_DB: "converter"
         POSTGRES_HOST: "postgres"
         POSTGRES_SSL_MODE: "disable"
         RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
@@ -35,7 +35,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./media:/media/
-      - ./media/thumbnails:/py-django/media/thumbnails
+      - ./media/thumbnails:/py-django/media/thumbnails/
+      - ./media/supervisor:/var/log/supervisor/
     ports:
       - "8000:8000"
     healthcheck:
@@ -47,51 +48,22 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     environment:
       ASSETS_URL: http://nginx:9000
+      CONVERSION_EXCHANGE: "conversionExchange"
       CONVERSION_KEY: "videoConversion"
-      DATABASE_URL: postgres://admin:root@postgres:5432/database
+      CONVERSION_QUEUE: "videoConversion_queue"
+      CONFIRMATION_EXCHANGE: "confirmationExchange"
+      CONFIRMATION_KEY: "videoConfirmation"
+      CONFIRMATION_QUEUE: "conversionConfirmation_queue"
+      DATABASE_URL: postgres://admin:root@postgres:5432/backoffice
       DJANGO_SUPERUSER_USERNAME: asolheiro
       DJANGO_SUPERUSER_EMAIL: admin@admin.com
       DJANGO_SUPERUSER_PASSWORD: admin
       RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/" 
-
-  postgres:
-    container_name: postgres
-    image: postgres:17.0-alpine3.20
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: "admin"
-      POSTGRES_PASSWORD: "root"
-      POSTGRES_DB: "database"
-    volumes:
-      - ./.docker/postgres:/var/lib/postgresql/data
-      - ./go-transcoder/init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d database"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    restart: always
-    ports:
-      - "8888:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "asolheiro@example.com"
-      PGADMIN_DEFAULT_PASSWORD: "admin"
-      POSTGRES_USER: "admin"
-      POSTGRES_PASSWORD: "root"
-      POSTGRES_DB: "database"
-    volumes:
-      - ./servers.json:/pgadmin4/servers.json
-    depends_on:
-      postgres:
-        condition: service_healthy
 
   rabbitmq:
     container_name: rabbitmq
@@ -133,3 +105,42 @@ services:
       admin-page:
         condition: service_healthy
     
+
+  postgres:
+    container_name: postgres
+    image: postgres:17.0-alpine3.20
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: "database"
+    volumes:
+      - ./.docker/postgres:/var/lib/postgresql/data
+      - ./go-transcoder/init_database.sql:/docker-entrypoint-initdb.d/init_converterDatabase.sql
+      - ./py-django/init_database.sql:/docker-entrypoint-initdb.d/init_backofficeDatabase.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'False'
+      PGADMIN_DEFAULT_EMAIL: "user@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "root"
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: "database"
+    volumes:
+      - ./servers.json:/pgadmin4/servers.json
+    depends_on:
+      postgres:
+        condition: service_healthy

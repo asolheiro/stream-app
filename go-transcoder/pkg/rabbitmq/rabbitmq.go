@@ -90,7 +90,7 @@ func (client *RabbitClient) ConsumeMessages(exchangeName, routingKey, queueName 
 	}
 
 	queue, err := client.channel.QueueDeclare(
-		queueName, true, true, false, false, nil,
+		queueName, true, false, false, false, nil,
 	)
 
 	if err != nil {
@@ -122,7 +122,7 @@ func (client *RabbitClient) PublishMessage(exchangeName, routingKey, queueName s
 	}
 
 	queue, err := client.channel.QueueDeclare(
-		queueName, true, true, false, false, nil,
+		queueName, true, false, false, false, nil,
 	)
 	if err != nil {
 		return fmt.Errorf("faile to declare queue: %v", err)

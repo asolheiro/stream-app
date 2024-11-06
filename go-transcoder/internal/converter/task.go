@@ -78,8 +78,8 @@ func (vc *VideoConverter) HandleMessage(ctx context.Context, delivery amqp.Deliv
 
 func (vc *VideoConverter) processVideo(task *VideoTask) error {
 	chunkPath := filepath.Join(vc.rootPath, fmt.Sprintf("%d", task.VideoID))
-	mergedFile := filepath.Join(task.VideoPath, "merged.mp4")
-	mpegDashPath := filepath.Join(task.VideoPath, "mpeg-dash")
+	mergedFile := filepath.Join(chunkPath, "merged.mp4")
+	mpegDashPath := filepath.Join(chunkPath, "mpeg-dash")
 
 	slog.Info("Merging chunks", slog.String("path", chunkPath))
 	if err := vc.mergeChunks(chunkPath, mergedFile); err != nil {
