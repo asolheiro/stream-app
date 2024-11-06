@@ -3,12 +3,9 @@ import { VideoCard } from "./VideoCard";
 ;
 import Link from "next/link";
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export async function getVideosRecommendations(
   videoId: number
 ): Promise<VideoModel[]> {
-  await sleep(2000);
   const response = await fetch(`${process.env.DJANGO_API_URL}/videos/${videoId}/recommendations`, {
     cache: "no-cache",
   });
