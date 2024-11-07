@@ -32,7 +32,7 @@ func MarkProcessed(db *sql.DB, videoID int) error {
 func RegisterError(db *sql.DB, errorData map[string]any, err error) error {
 	serializedError, _ := json.Marshal(errorData)
 	query := "INSERT INTO process_errors_log (error_details, created_at) VALUES ($1, $2);"
-	_, dbErr := db.Exec(query, string(serializedError))
+	_, dbErr := db.Exec(query, string(serializedError), time.Now())
 	if dbErr != nil {
 		slog.Error(
 			"Error registering error",

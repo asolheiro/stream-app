@@ -19,6 +19,7 @@ export function VideoCard(props: VideoCardProps) {
   const flexDirection = orientation === "vertical" ? "flex-col" : "flex-row";
   const imageSize =
     orientation === "horizontal" ? "w-5/12 h-24" : "w-full h-40";
+
   return (
     <div
       className={`flex ${flexDirection} overflow-hidden gap-2`}

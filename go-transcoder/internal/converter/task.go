@@ -13,7 +13,6 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
-	"time"
 
 	"github.com/streadway/amqp"
 )
@@ -153,7 +152,6 @@ func (vc *VideoConverter) logError(task VideoTask, message string, err error) {
 		"video_id": task.VideoID,
 		"error":    message,
 		"details":  err.Error(),
-		"time":     time.Now(),
 	}
 	serializedError, _ := json.Marshal(errorData)
 	slog.Error("processing err", slog.String("error_details", string(serializedError)))

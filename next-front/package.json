@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
-    "next": "^15.0.0-rc.0",
-    "react": "^19.0.0-rc-cd22717c-20241013",
-    "react-dom": "^19.0.0-rc-cd22717c-20241013",
+    "next": "^15.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "shaka-player": "^4.11.7"
   },
   "devDependencies": {
@@ -20,7 +20,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.3",
+    "eslint-config-next": "^15.0.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

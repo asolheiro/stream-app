@@ -52,7 +52,7 @@ services:
       - 8.8.8.8
       - 8.8.4.4
     environment:
-      ASSETS_URL: http://nginx:9000
+      ASSETS_URL: http://localhost:9000
       CONVERSION_EXCHANGE: "conversionExchange"
       CONVERSION_KEY: "videoConversion"
       CONVERSION_QUEUE: "videoConversion_queue"
@@ -60,9 +60,9 @@ services:
       CONFIRMATION_KEY: "videoConfirmation"
       CONFIRMATION_QUEUE: "conversionConfirmation_queue"
       DATABASE_URL: postgres://admin:root@postgres:5432/backoffice
-      DJANGO_SUPERUSER_USERNAME: asolheiro
-      DJANGO_SUPERUSER_EMAIL: admin@admin.com
-      DJANGO_SUPERUSER_PASSWORD: admin
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL: user@admin.com
+      DJANGO_SUPERUSER_PASSWORD: root
       RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/" 
 
   rabbitmq:

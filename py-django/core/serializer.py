@@ -1,5 +1,5 @@
-from django.conf import Settings
-from rest_framework import serializers, settings
+from django.conf import settings
+from rest_framework import serializers
 from core.models import Video
 
 class VideoSerializer(serializers.ModelSerializer):
@@ -15,14 +15,11 @@ class VideoSerializer(serializers.ModelSerializer):
     video_url = serializers.SerializerMethodField()
     
     def get_thumbnail(self, obj):
-        
         return f'{settings.ASSETS_URL}/{obj.thumbnail}'
 
 
     def get_video_url(self, obj):
-        # asset_url = settings.ASSET_URL
-        # return f'{asset_url}{obj.video_media.video_path}'
-        return f'{settings.ASSETS_URL}/{obj.video_media.video_path}'
+        return f'{settings.ASSETS_URL}{obj.video_media.video_path}'
     
     class Meta:
         model = Video
